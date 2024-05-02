@@ -1,11 +1,22 @@
-renner_ci: main.o functions.o
-	g++ main.o functions.o -o renner_ci
+CC = g++
+CFLAGS = -Wall -std=c++17
+TARGET = renner_ci
+SRCDIR = src
+OBJDIR = obj
 
-main.o: main.cpp
-	g++ -c main.cpp
+SOURCES := $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS := $(patsubst $(SRCDIR)%.cpp, $(OBJDIR)/%.o,$(SOURCES))
 
-functions.o: functions.cpp
-	g++ -c functions.cpp
+$(TARGET): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR):
+	mkdir -p $@
 
 clean:
-	rm *.o renner_ci
+	rm -rf $(OBJDIR) $(TARGET)
+
+.PHONY: clean
